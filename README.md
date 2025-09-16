@@ -16,4 +16,12 @@ Autotools is a set of tools used to generate build scripts, including `autoconf`
 5. Run `./configure` to generate the `Makefile` file.
 6. Run `make` to compile the project.
 
-Cross complilation [Lighttpd](https://github.com/lighttpd/lighttpd1.4) example: `cd Autotools && ./build_lighttpd_linux.sh`
+Cross compilation [Lighttpd](https://github.com/lighttpd/lighttpd1.4) example: `cd Autotools && ./build_lighttpd_linux.sh`
+
+### [CMake](https://cmake.org/)
+CMake is a cross-platform build system generator, which can generate build scripts for various platforms, including Windows, Linux, macOS, etc. The general process is as follows:
+1. Write the `CMakeLists.txt` file, which is used to generate the build scripts.
+2. Run `cmake` to generate the build scripts.
+3. Run `make` to compile the project.
+
+Cross compilation [protobuf](https://github.com/protocolbuffers/protobuf) example: `cd CMake && ./build.sh`
