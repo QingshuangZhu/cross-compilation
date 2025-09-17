@@ -119,7 +119,7 @@ extract() {
 build_fcgi() {
   echo "=== Building fcgi ==="
   if [ ! -d "${BUILD_DIR}/fcgi2-${FCGI_VER}" ]; then
-    extract "${SRC_DIR}/fcgi2-${FCGI_VER}.tar.gz" "${BUILD_DIR}"
+    extract "${SRC_DIR}/${FCGI_VER}.tar.gz" "${BUILD_DIR}"
   fi
   pushd "${BUILD_DIR}/fcgi2-${FCGI_VER}"
   if [ ! -f "${PREFIX}/include/fastcgi.h" ]; then

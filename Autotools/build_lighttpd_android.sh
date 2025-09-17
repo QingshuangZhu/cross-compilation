@@ -5,7 +5,7 @@
 
 # ---------------------- User-editable variables ----------------------
 NDK=/opt/android-ndk-r26d              # Android NDK path
-ARCH=aarch64                           # aarch64, armv7a, etc.
+ARCH=armv7a                           # aarch64, armv7a, etc.
 API=29                                 # Android API level
 PREFIX=$(pwd)/android-root             # Install prefix
 BUILD_DIR=$(pwd)/build                 # Build directory
@@ -122,7 +122,7 @@ extract() {
 build_fcgi() {
   echo "=== Building fcgi ==="
   if [ ! -d "${BUILD_DIR}/fcgi2-${FCGI_VER}" ]; then
-    extract "${SRC_DIR}/fcgi2-${FCGI_VER}.tar.gz" "${BUILD_DIR}"
+    extract "${SRC_DIR}/${FCGI_VER}.tar.gz" "${BUILD_DIR}"
   fi
   pushd "${BUILD_DIR}/fcgi2-${FCGI_VER}"
   if [ ! -f "${PREFIX}/include/fastcgi.h" ]; then
@@ -252,7 +252,7 @@ main() {
     build_pcre
     build_openssl
     build_lighttpd
-    strip executable(s) to save size
+    # strip executable(s) to save size
     if [ -f "${PREFIX}/sbin/lighttpd" ]; then
       $STRIP --strip-unneeded "${PREFIX}/sbin/lighttpd" || true
     fi
