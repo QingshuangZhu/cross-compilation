@@ -24,4 +24,4 @@ CMake is a cross-platform build system generator, which can generate build scrip
 2. Run `cmake` to generate the build scripts.
 3. Run `make` to compile the project.
 
-Cross compilation [protobuf](https://github.com/protocolbuffers/protobuf) example: `cd CMake && ./build.sh`
+Cross compilation [protobuf](https://github.com/protocolbuffers/protobuf) example: `cd CMake && ./build_protobuf_linux.sh`
