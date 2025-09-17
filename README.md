@@ -16,7 +16,7 @@ Autotools is a set of tools used to generate build scripts, including `autoconf`
 5. Run `./configure` to generate the `Makefile` file.
 6. Run `make` to compile the project.
 
-Cross compilation [Lighttpd](https://github.com/lighttpd/lighttpd1.4) example: `cd Autotools && ./build_lighttpd_linux.sh`
+Autotools cross-compilation requires explicitly specifying the toolchain and defining the build/host/target triple. `--build`: specify the build system, `--host`: specify the runtime platform, `--target`: used only when building the toolchain itself, specifying the platform for which the toolchain will generate code. Run `./configure --build=xxx --host=xxx --target=xxx --prefix=xxx` to generate the build scripts. then `make` to compile the project. Cross compilation [Lighttpd](https://github.com/lighttpd/lighttpd1.4) example: `cd Autotools && ./build_lighttpd_linux.sh`
 
 ### [CMake](https://cmake.org/)
 CMake is a cross-platform build system generator, which can generate build scripts for various platforms, including Windows, Linux, macOS, etc. The general process is as follows:
@@ -24,4 +24,4 @@ CMake is a cross-platform build system generator, which can generate build scrip
 2. Run `cmake` to generate the build scripts.
 3. Run `make` to compile the project.
 
-Cross compilation [protobuf](https://github.com/protocolbuffers/protobuf) example: `cd CMake && ./build_protobuf_linux.sh`
+CMake adopts a more modern and clearer approach: the Toolchain File. This is a `.cmake` file written by the user that explicitly tells CMake all the information about the target platform. This method completely separates the configuration of "compiling for which platform" from the logic of "how the project is built" (CMakeLists.txt). Cross compilation [protobuf](https://github.com/protocolbuffers/protobuf) example: `cd CMake && ./build_protobuf_linux.sh`
