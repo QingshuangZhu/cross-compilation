@@ -7,7 +7,7 @@
 TOOLCHAIN=/opt/toolchain/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu
 # SYSROOT="${TOOLCHAIN}/aarch64-linux-gnu/libc"
 ARCH=aarch64                           # aarch64, armv7a, etc.
-PREFIX=$(pwd)/linux-root               # Install prefix
+PREFIX=/opt/linux-arm64                # Install prefix
 BUILD_DIR=$(pwd)/build                 # Build directory
 SRC_DIR=$(pwd)/src                     # Source directory
 JOBS=$(nproc 2>/dev/null || echo 4)    # Number of parallel make jobs, default to 4 if nproc not available
@@ -190,7 +190,7 @@ build_openssl() {
   pushd "${BUILD_DIR}/${OPENSSL_VER}"
   if [ ! -f "${PREFIX}/include/openssl/ssl.h" ] || [ ! -f "${PREFIX}/lib/libcrypto.a" ] || [ ! -f "${PREFIX}/lib/libssl.a" ]; then
     make clean || true
-    ./Configure "${OPENSSL_TARGET}" no-shared no-unit-test --prefix="${PREFIX}"
+    ./Configure "${OPENSSL_TARGET}" --prefix="${PREFIX}" no-shared no-unit-test
     make -j"${JOBS}"
     make install_sw
   else

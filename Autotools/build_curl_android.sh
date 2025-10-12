@@ -7,7 +7,7 @@
 NDK=/opt/android-ndk-r26d              # Android NDK path
 ARCH=aarch64                           # aarch64, armv7a, etc.
 API=29                                 # Android API level
-PREFIX=$(pwd)/android-root             # Install prefix
+PREFIX=/opt/android-arm64              # Install prefix
 BUILD_DIR=$(pwd)/build                 # Build directory
 SRC_DIR=$(pwd)/src                     # Source directory
 JOBS=$(nproc 2>/dev/null || echo 4)    # Number of parallel make jobs, default to 4 if nproc not available
@@ -142,7 +142,7 @@ build_openssl() {
   pushd "${BUILD_DIR}/${OPENSSL_VER}"
   if [ ! -f "${PREFIX}/include/openssl/ssl.h" ] || [ ! -f "${PREFIX}/lib/libcrypto.a" ] || [ ! -f "${PREFIX}/lib/libssl.a" ]; then
     make clean || true
-    ./Configure "${OPENSSL_TARGET}" no-shared no-unit-test --prefix="${PREFIX}" -D__ANDROID_API__="${API}"
+    ./Configure "${OPENSSL_TARGET}" --prefix="${PREFIX}" -D__ANDROID_API__="${API}" no-shared no-unit-test
     make -j"${JOBS}"
     make install_sw
   else
@@ -159,7 +159,7 @@ build_tongsuo() {
   pushd "${BUILD_DIR}/Tongsuo-${TONGSUO_VER}"
   if [ ! -f "${PREFIX}/include/openssl/ssl.h" ] || [ ! -f "${PREFIX}/lib/libcrypto.a" ] || [ ! -f "${PREFIX}/lib/libssl.a" ]; then
     make clean || true
-    ./config "${OPENSSL_TARGET}" --prefix="${PREFIX}" no-shared no-unit-test 
+    ./config "${OPENSSL_TARGET}" enable-ntls --prefix="${PREFIX}" -D__ANDROID_API__="${API}" no-shared no-unit-test
     make -j"${JOBS}"
     make install_dev
   else
@@ -210,8 +210,8 @@ main() {
     download "$CURL_URL" "$SRC_DIR"
     
     build_zlib
-    build_openssl
-    # build_tongsuo
+    # build_openssl
+    build_tongsuo
     build_curl
     # strip executable(s) to save size
     if [ -f "${PREFIX}/lib/libcurl.a" ]; then
