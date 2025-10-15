@@ -5,6 +5,8 @@
 
 # ---------------------- User-editable variables ----------------------
 TOOLCHAIN=/opt/toolchain/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu
+# TOOLCHAIN=/opt/toolchain/gcc-linaro-7.4.1-2019.02-x86_64_aarch64-linux-gnu
+# TOOLCHAIN=/opt/toolchain/gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf
 # SYSROOT="${TOOLCHAIN}/aarch64-linux-gnu/libc"
 ARCH=aarch64                           # aarch64, armv7a, etc.
 PREFIX=/opt/linux-arm64                # Install prefix
@@ -16,6 +18,7 @@ ZLIB_VER="zlib-1.3.1"                  # zlib version
 OPENSSL_VER="openssl-3.5.2"            # OpenSSL version
 TONGSUO_VER="8.4.0"                    # tongsuo version
 CURL_VER="curl-8.16.0"                 # cURL version
+TONGSUO_CURL_VER="2025.3.9-SM"        # tongsuo curl version
 
 DOWNLOAD_RETRIES=3                     # Number of download retries
 
@@ -23,6 +26,7 @@ ZLIB_URL="https://zlib.net/${ZLIB_VER}.tar.xz"
 OPENSSL_URL="https://www.openssl.org/source/${OPENSSL_VER}.tar.gz"
 TONGSUO_URL="https://github.com/Tongsuo-Project/Tongsuo/archive/refs/tags/${TONGSUO_VER}.tar.gz"
 CURL_URL="https://curl.se/download/${CURL_VER}.tar.xz"
+TONGSUO_CURL_URL="https://github.com/Tongsuo-Project/curl/archive/refs/tags/v${TONGSUO_CURL_VER}.tar.gz"
 
 # ---------------------- Target triple / openssl target ---------------
 # target triple: <Architecture>-<System>-<Application Binary Interface>
@@ -192,6 +196,35 @@ build_curl() {
   popd
 }
 
+build_tongsuo_curl() {
+  echo "=== Building Tongsuo cURL ==="
+  if [ ! -d "${BUILD_DIR}/curl-${TONGSUO_CURL_VER}" ]; then
+    extract "${SRC_DIR}/v${TONGSUO_CURL_VER}.tar.gz" "${BUILD_DIR}"
+  fi
+  pushd "${BUILD_DIR}/curl-${TONGSUO_CURL_VER}"
+
+  # sudo apt install -y autoconf automake libtool pkg-config m4 autopoint autoconf-archive
+  if [ ! -x "./configure" ] && [ -f "./autogen.sh" ]; then
+    echo "Running autogen.sh to generate configure (requires autoconf/automake)"
+    ./autogen.sh
+  fi
+  make clean || true
+  autoreconf -fi
+  ./configure \
+    --host="${TARGET_TRIPLE}" \
+    --prefix="${PREFIX}" \
+    --with-zlib="${PREFIX}" \
+    --with-openssl="${PREFIX}" \
+    --without-bzip2 \
+    --without-libpsl \
+    --enable-ftp \
+    --enable-static
+
+  make -j"${JOBS}"
+  make install
+  popd
+}
+
 # ---------------------- Main function -------------------------
 main() {
     if [ ! -d "$TOOLCHAIN" ]; then
@@ -202,13 +235,15 @@ main() {
 
     download "$ZLIB_URL" "$SRC_DIR"
     download "$OPENSSL_URL" "$SRC_DIR"
-    # download "$TONGSUO_URL" "$SRC_DIR"
+    download "$TONGSUO_URL" "$SRC_DIR"
     download "$CURL_URL" "$SRC_DIR"
+    download "$TONGSUO_CURL_URL" "$SRC_DIR"
     
     build_zlib
     # build_openssl
     build_tongsuo
-    build_curl
+    # build_curl
+    build_tongsuo_curl
     # strip executable(s) to save size
     if [ -f "${PREFIX}/lib/libcurl.a" ]; then
       $STRIP --strip-unneeded "${PREFIX}/lib/libcurl.a" || true
