@@ -69,7 +69,7 @@ build_mosquitto() {
         -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" \
         -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_EXE_LINKER_FLAGS="-lssl -lcrypto -lpthread -ldl -latomic" \
+        -DCMAKE_EXE_LINKER_FLAGS="-lpthread -ldl -latomic" \
         `# If it is ARM, uncomment the following line and comment out the above line.` \
         `# -DCMAKE_EXE_LINKER_FLAGS="-lpthread -ldl"` \
         -DWITH_TLS=ON \
