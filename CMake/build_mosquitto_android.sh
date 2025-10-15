@@ -64,11 +64,12 @@ build_mosquitto() {
   fi
   pushd "${BUILD_DIR}/mosquitto-${MOSQUITTO_VER}"
   if [ ! -f "${PREFIX}/include/mosquitto.h" ]; then
+    rm -rf build || true
+    mkdir build && pushd build
     cmake \
         -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" \
         -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_EXE_LINKER_FLAGS="-lssl -lcrypto -lpthread -ldl -latomic" \
         -DCMAKE_GENERATOR="Ninja" \
         -DCMAKE_MAKE_PROGRAM=ninja \
         -DANDROID_TOOLCHAIN=clang \
@@ -81,11 +82,13 @@ build_mosquitto() {
         -DWITH_STATIC_LIBRARIES=ON \
         -DWITH_PLUGINS=OFF \
         -DDOCUMENTATION=OFF \
+        -DOPENSSL_ROOT_DIR="${PREFIX}" \
         -DOPENSSL_INCLUDE_DIR="${PREFIX}/include" \
         -DOPENSSL_SSL_LIBRARY="${PREFIX}/lib/libssl.a" \
         -DOPENSSL_CRYPTO_LIBRARY="${PREFIX}/lib/libcrypto.a" \
-        .
+        ..
     ninja install
+    popd
   else
     echo "mosquitto already installed in ${PREFIX}"
   fi
