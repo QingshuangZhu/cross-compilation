@@ -7,7 +7,7 @@
 NDK=/opt/android-ndk-r26d              # Android NDK path
 ARCH=arm64-v8a                         # arm64-v8a, armeabi-v7a, etc.
 API=29                                 # Android API level
-PREFIX=$(pwd)/android-root             # Install prefix
+PREFIX=/opt/android-arm64              # Install prefix
 BUILD_DIR=$(pwd)/build                 # Build directory
 SRC_DIR=$(pwd)/src                     # Source directory
 JOBS=$(nproc 2>/dev/null || echo 4)    # Number of parallel make jobs, default to 4 if nproc not available
@@ -64,25 +64,29 @@ build_protobuf() {
   fi
   pushd "${BUILD_DIR}/protobuf-${PROTOBUF_VER}"
   if [ ! -f "${PREFIX}/include/google/protobuf/descriptor.h" ]; then
+    rm -rf build || true
+    mkdir build && pushd build
     cmake \
+        -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" \
+        -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_CXX_STANDARD=17 \
-        -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-        -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" \
+        -DCMAKE_PREFIX_PATH="${PREFIX}" \
+        -DCMAKE_GENERATOR="Ninja" \
+        -DCMAKE_MAKE_PROGRAM=ninja \
+        -DANDROID_TOOLCHAIN=clang \
         -DANDROID_NDK="${NDK}" \
         -DANDROID_ABI="${ARCH}" \
         -DANDROID_NATIVE_API_LEVEL="${API}" \
-        -DANDROID_TOOLCHAIN=clang \
-        -DCMAKE_GENERATOR="Ninja" \
-        -DCMAKE_MAKE_PROGRAM=ninja \
-        -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" \
         -Dprotobuf_INSTALL=ON \
+        -Dprotobuf_PROTOC_EXECUTABLE="/usr/local/bin/protoc" \
         -Dprotobuf_BUILD_PROTOBUF_BINARIES=ON \
         -Dprotobuf_BUILD_LIBUPB=ON \
         -Dprotobuf_BUILD_PROTOC_BINARIES=OFF \
         -Dprotobuf_BUILD_TESTS=OFF \
-        .
+        ..
     ninja install
+    popd
   else
     echo "protobuf already installed in ${PREFIX}"
   fi

@@ -4,8 +4,8 @@
 # set -x
 
 # ---------------------- User-editable variables ----------------------
-TOOLCHAIN_FILE=$(pwd)/aarch-toolchain.cmake
-PREFIX=$(pwd)/linux-root               # Install prefix
+TOOLCHAIN_FILE=$(pwd)/arm-toolchain.cmake
+PREFIX=/opt/linux-arm                  # Install prefix
 BUILD_DIR=$(pwd)/build                 # Build directory
 SRC_DIR=$(pwd)/src                     # Source directory
 JOBS=$(nproc 2>/dev/null || echo 4)    # Number of parallel make jobs, default to 4 if nproc not available
@@ -62,21 +62,27 @@ build_protobuf() {
   fi
   pushd "${BUILD_DIR}/protobuf-${PROTOBUF_VER}"
   if [ ! -f "${PREFIX}/include/google/protobuf/descriptor.h" ]; then
+    rm -rf build || true
+    mkdir build && pushd build
     cmake \
+        -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" \
+        -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_CXX_STANDARD=17 \
-        -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-        # -DCMAKE_C_FLAGS="-march=armv8-a" \
-        # -DCMAKE_CXX_FLAGS="-march=armv8-a" \
-        -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" \
+        -DCMAKE_PREFIX_PATH="${PREFIX}" \
+        `# If it is ARM64, uncomment the following two lines.` \
+        `# -DCMAKE_C_FLAGS="-march=armv8-a"` \
+        `# -DCMAKE_CXX_FLAGS="-march=armv8-a"` \
         -Dprotobuf_INSTALL=ON \
+        -Dprotobuf_PROTOC_EXECUTABLE=/usr/local/bin/protoc \
         -Dprotobuf_BUILD_PROTOBUF_BINARIES=ON \
         -Dprotobuf_BUILD_LIBUPB=ON \
         -Dprotobuf_BUILD_PROTOC_BINARIES=OFF \
         -Dprotobuf_BUILD_TESTS=OFF \
-        .
+        ..
     make -j"${JOBS}"
     make install
+    popd
   else
     echo "protobuf already installed in ${PREFIX}"
   fi
