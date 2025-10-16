@@ -209,6 +209,7 @@ build_tongsuo_curl() {
     ./autogen.sh
   fi
   make clean || true
+  patch -p1 -N < tongsuo.patch
   autoreconf -fi
   ./configure \
     --host="${TARGET_TRIPLE}" \
@@ -218,7 +219,7 @@ build_tongsuo_curl() {
     --without-bzip2 \
     --without-libpsl \
     --enable-ftp \
-    --enable-static
+    --enable-static --enable-warnings --enable-werror
 
   make -j"${JOBS}"
   make install
