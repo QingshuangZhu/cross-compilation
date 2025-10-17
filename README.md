@@ -24,4 +24,4 @@ CMake is a cross-platform build system generator, which can generate build scrip
 2. Run `cmake` to generate the build scripts.
 3. Run `make` to compile the project.
 
-CMake adopts a more modern and clearer approach: the Toolchain File. This is a `.cmake` file written by the user that explicitly tells CMake all the information about the target platform. This method completely separates the configuration of "compiling for which platform" from the logic of "how the project is built" (CMakeLists.txt). Cross compilation [protobuf](https://github.com/protocolbuffers/protobuf) example: `cd CMake && ./build_protobuf_linux.sh`
+CMake adopts a more modern and clearer approach: the [Toolchain File](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html). This is a `.cmake` file written by the user that explicitly tells CMake all the information about the target platform. This method completely separates the configuration of "compiling for which platform" from the logic of "how the project is built" (CMakeLists.txt). Cross compilation [protobuf](https://github.com/protocolbuffers/protobuf) example: `cd CMake && ./build_protobuf_linux.sh`
