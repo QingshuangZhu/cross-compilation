@@ -163,7 +163,7 @@ build_tongsuo() {
     make -j"${JOBS}"
     make install
   else
-    echo "OpenSSL already installed in ${PREFIX}"
+    echo "Tongsuo already installed in ${PREFIX}"
   fi
   popd
 }
