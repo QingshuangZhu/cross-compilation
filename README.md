@@ -6,6 +6,7 @@ Autotools and CMake are both build system generators, which can configure the to
 * Download the NDK from [here](https://developer.android.com/ndk/downloads) and extract it to `/opt/android-ndk-r26d` directory.
 * Download the RISC-V GNU Compiler Toolchain from [here](https://github.com/riscv-collab/riscv-gnu-toolchain/releases).
 * Download the LLVM Toolchain from [here](https://github.com/llvm/llvm-project/releases).
+* Download the HarmonyOS Command Line Tools from [here](https://developer.huawei.com/consumer/cn/download/command-line-tools-for-hmos).
 
 ### [Autotools](https://www.gnu.org/software/automake/manual/html_node/Autotools-Introduction.html)
 Autotools is a set of tools used to generate build scripts, including `autoconf`, `automake`, `libtool` and `aclocal`. The general process is as follows:
