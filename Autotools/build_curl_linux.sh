@@ -5,10 +5,11 @@
 
 # ---------------------- User-editable variables ----------------------
 TOOLCHAIN=/opt/toolchain/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu
+# TOOLCHAIN=/opt/toolchain/gcc-arm-10.2-2020.11-x86_64-aarch64_be-none-linux-gnu
 # TOOLCHAIN=/opt/toolchain/gcc-linaro-7.4.1-2019.02-x86_64_aarch64-linux-gnu
 # TOOLCHAIN=/opt/toolchain/gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf
 # SYSROOT="${TOOLCHAIN}/aarch64-linux-gnu/libc"
-ARCH=aarch64                           # aarch64, armv7a, etc.
+ARCH=aarch64                           # aarch64, aarch64_be, armv7a, etc.
 PREFIX=/opt/linux-arm64                # Install prefix
 BUILD_DIR=$(pwd)/build                 # Build directory
 SRC_DIR=$(pwd)/src                     # Source directory
@@ -18,7 +19,7 @@ ZLIB_VER="zlib-1.3.1"                  # zlib version
 OPENSSL_VER="openssl-3.5.2"            # OpenSSL version
 TONGSUO_VER="8.4.0"                    # tongsuo version
 CURL_VER="curl-8.16.0"                 # cURL version
-TONGSUO_CURL_VER="2025.3.9-SM"        # tongsuo curl version
+TONGSUO_CURL_VER="2025.3.9-SM"         # tongsuo curl version
 
 DOWNLOAD_RETRIES=3                     # Number of download retries
 
@@ -32,8 +33,8 @@ TONGSUO_CURL_URL="https://github.com/Tongsuo-Project/curl/archive/refs/tags/v${T
 # target triple: <Architecture>-<System>-<Application Binary Interface>
 
 case "$ARCH" in
-  arm64|aarch64)
-    TARGET_TRIPLE="aarch64-none-linux-gnu"    # aarch64-linux-gnu
+  arm64|aarch64|aarch64_be)
+    TARGET_TRIPLE="aarch64-none-linux-gnu"    # aarch64-linux-gnu aarch64_be-none-linux-gnu
     OPENSSL_TARGET="linux-aarch64"
     ;;
   armv7a|armhf|arm)
