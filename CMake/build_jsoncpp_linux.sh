@@ -5,7 +5,7 @@
 
 # ---------------------- User-editable variables ----------------------
 TOOLCHAIN_FILE=$(pwd)/aarch64_be-toolchain.cmake
-PREFIX=$(pwd)/linux-arm64_be             # Install prefix
+PREFIX=/opt/linux-arm64_be             # Install prefix
 BUILD_DIR=$(pwd)/build                 # Build directory
 SRC_DIR=$(pwd)/src                     # Source directory
 JOBS=$(nproc 2>/dev/null || echo 4)    # Number of parallel make jobs, default to 4 if nproc not available

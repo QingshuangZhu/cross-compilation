@@ -93,14 +93,15 @@ build_paho_mqtt_embedded_c() {
   if [ ! -f "${PREFIX}/include/MQTTClient.h" ]; then
     rm -rf build || true
     mkdir build && pushd build
-
     cmake \
         -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" \
         -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+        -DBUILD_SHARED_LIBS=OFF \
         ..
     make -j"${JOBS}"
-    make install
+    make install DESTDIR="${PREFIX}"
     popd
   else
     echo "paho.mqtt.embedded-c already installed in ${PREFIX}"

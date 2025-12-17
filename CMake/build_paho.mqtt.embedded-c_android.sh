@@ -102,6 +102,8 @@ build_paho_mqtt_embedded_c() {
         -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" \
         -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+        -DBUILD_SHARED_LIBS=OFF \
         -DCMAKE_GENERATOR="Ninja" \
         -DCMAKE_MAKE_PROGRAM=ninja \
         -DANDROID_TOOLCHAIN=clang \
@@ -109,7 +111,7 @@ build_paho_mqtt_embedded_c() {
         -DANDROID_ABI="${ARCH}" \
         -DANDROID_NATIVE_API_LEVEL="${API}" \
         ..
-    ninja install
+    DESTDIR="${PREFIX}" ninja install
     popd
   else
     echo "paho.mqtt.embedded-c already installed in ${PREFIX}"
