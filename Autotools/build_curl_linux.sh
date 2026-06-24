@@ -15,7 +15,7 @@ BUILD_DIR=$(pwd)/build                 # Build directory
 SRC_DIR=$(pwd)/src                     # Source directory
 JOBS=$(nproc 2>/dev/null || echo 4)    # Number of parallel make jobs, default to 4 if nproc not available
 
-ZLIB_VER="zlib-1.3.1"                  # zlib version
+ZLIB_VER="1.3.1"                       # zlib version
 OPENSSL_VER="openssl-3.5.2"            # OpenSSL version
 TONGSUO_VER="8.4.0"                    # tongsuo version
 CURL_VER="curl-8.16.0"                 # cURL version
@@ -23,7 +23,7 @@ TONGSUO_CURL_VER="2025.3.9-SM"         # tongsuo curl version
 
 DOWNLOAD_RETRIES=3                     # Number of download retries
 
-ZLIB_URL="https://zlib.net/${ZLIB_VER}.tar.xz"
+ZLIB_URL="https://zlib.net/zlib-${ZLIB_VER}.tar.gz"
 OPENSSL_URL="https://www.openssl.org/source/${OPENSSL_VER}.tar.gz"
 TONGSUO_URL="https://github.com/Tongsuo-Project/Tongsuo/archive/refs/tags/${TONGSUO_VER}.tar.gz"
 CURL_URL="https://curl.se/download/${CURL_VER}.tar.xz"
@@ -120,10 +120,10 @@ extract() {
 
 build_zlib() {
   echo "=== Building zlib ==="
-  if [ ! -d "${BUILD_DIR}/${ZLIB_VER}" ]; then
-    extract "${SRC_DIR}/${ZLIB_VER}.tar.xz" "${BUILD_DIR}"
+  if [ ! -d "${BUILD_DIR}/zlib-${ZLIB_VER}" ]; then
+    extract "${SRC_DIR}/zlib-${ZLIB_VER}.tar.gz" "${BUILD_DIR}"
   fi
-  pushd "${BUILD_DIR}/${ZLIB_VER}"
+  pushd "${BUILD_DIR}/zlib-${ZLIB_VER}"
   if [ ! -f "${PREFIX}/include/zlib.h" ]; then
     make clean || true
     CHOST="${TARGET_TRIPLE}" ./configure --prefix="${PREFIX}" --static

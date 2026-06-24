@@ -4,7 +4,7 @@
 # set -x
 
 # ---------------------- User-editable variables ----------------------
-NDK=/opt/android-ndk-r26d              # Android NDK path
+NDK=/opt/toolchain/android-ndk-r26d              # Android NDK path
 ARCH=armv7a                            # aarch64, armv7a, etc.
 API=29                                 # Android API level
 PREFIX=/opt/android-arm                # Install prefix
@@ -13,7 +13,7 @@ SRC_DIR=$(pwd)/src                     # Source directory
 JOBS=$(nproc 2>/dev/null || echo 4)    # Number of parallel make jobs, default to 4 if nproc not available
 
 FCGI_VER="2.4.6"                       # FastCGI version
-ZLIB_VER="zlib-1.3.1"                  # zlib version
+ZLIB_VER="1.3.1"                       # zlib version
 PCRE_VER="8.45"                        # PCRE version
 OPENSSL_VER="openssl-3.5.2"            # OpenSSL version
 LIGHTTPD_VER="lighttpd-1.4.81"         # Lighttpd version
@@ -21,8 +21,7 @@ LIGHTTPD_VER="lighttpd-1.4.81"         # Lighttpd version
 DOWNLOAD_RETRIES=3                     # Number of download retries
 
 FCGI_URL="https://github.com/FastCGI-Archives/fcgi2/archive/refs/tags/${FCGI_VER}.tar.gz"
-
-ZLIB_URL="https://zlib.net/${ZLIB_VER}.tar.xz"
+ZLIB_URL="https://github.com/madler/zlib/releases/download/v${ZLIB_VER}/zlib-${ZLIB_VER}.tar.gz"
 PCRE_URL="https://downloads.sourceforge.net/project/pcre/pcre/${PCRE_VER}/pcre-${PCRE_VER}.tar.gz"
 OPENSSL_URL="https://www.openssl.org/source/${OPENSSL_VER}.tar.gz"
 LIGHTTPD_URL="https://download.lighttpd.net/lighttpd/releases-1.4.x/${LIGHTTPD_VER}.tar.xz"
@@ -142,10 +141,10 @@ build_fcgi() {
 
 build_zlib() {
   echo "=== Building zlib ==="
-  if [ ! -d "${BUILD_DIR}/${ZLIB_VER}" ]; then
-    extract "${SRC_DIR}/${ZLIB_VER}.tar.xz" "${BUILD_DIR}"
+  if [ ! -d "${BUILD_DIR}/zlib-${ZLIB_VER}" ]; then
+    extract "${SRC_DIR}/zlib-${ZLIB_VER}.tar.gz" "${BUILD_DIR}"
   fi
-  pushd "${BUILD_DIR}/${ZLIB_VER}"
+  pushd "${BUILD_DIR}/zlib-${ZLIB_VER}"
   if [ ! -f "${PREFIX}/include/zlib.h" ]; then
     make clean || true
     CHOST="${TARGET_TRIPLE}" ./configure --prefix="${PREFIX}" --static
