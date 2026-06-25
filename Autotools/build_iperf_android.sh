@@ -4,7 +4,7 @@
 # set -x
 
 # ---------------------- User-editable variables ----------------------
-NDK=/opt/android-ndk-r26d              # Android NDK path
+NDK=/opt/toolchain/android-ndk-r26d    # Android NDK path
 ARCH=aarch64                           # aarch64, armv7a, etc.
 API=29                                 # Android API level
 PREFIX=/opt/android-arm64              # Install prefix

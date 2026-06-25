@@ -4,10 +4,10 @@
 # set -x
 
 # ---------------------- User-editable variables ----------------------
-NDK=/opt/android-ndk-r26d              # Android NDK path
-ARCH=armv7a                           # aarch64, armv7a, etc.
+NDK=/opt/toolchain/android-ndk-r26d    # Android NDK path
+ARCH=armv7a                            # aarch64, armv7a, etc.
 API=29                                 # Android API level
-PREFIX=$(pwd)/android-arm              # Install prefix
+PREFIX=$/opt/android-arm               # Install prefix
 BUILD_DIR=$(pwd)/build                 # Build directory
 SRC_DIR=$(pwd)/src                     # Source directory
 JOBS=$(nproc 2>/dev/null || echo 4)    # Number of parallel make jobs, default to 4 if nproc not available
