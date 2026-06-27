@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# set -euo pipefail
+set -euo pipefail
 # set -x
 
 # ---------------------- User-editable variables ----------------------
@@ -10,7 +10,7 @@ TOOLCHAIN=/opt/toolchain/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu
 # TOOLCHAIN=/opt/toolchain/gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf
 # SYSROOT="${TOOLCHAIN}/aarch64-linux-gnu/libc"
 ARCH=aarch64                           # aarch64, aarch64_be, armv7a, etc.
-PREFIX=/opt/linux-arm64                # Install prefix
+PREFIX=$HOME/opt/linux-arm64                # Install prefix
 BUILD_DIR=$(pwd)/build                 # Build directory
 SRC_DIR=$(pwd)/src                     # Source directory
 JOBS=$(nproc 2>/dev/null || echo 4)    # Number of parallel make jobs, default to 4 if nproc not available
@@ -67,7 +67,7 @@ NM="${TOOLCHAIN}/bin/${TARGET_TRIPLE}-nm"
 
 # ---------------------- Environment variables ----------------------
 export PATH="${TOOLCHAIN}/bin:${PATH}"
-export CC CXX AR AS LD RANLIB SYSROOTA
+export CC CXX AR AS LD RANLIB
 export CFLAGS="-fPIC -O2 -pipe"
 export CXXFLAGS="-fPIC -O2 -pipe"
 export LDFLAGS="-L${PREFIX}/lib"
@@ -90,7 +90,7 @@ download() {
     echo "Found existing $dest"
     return 0
   fi
-  while [ $attempts -lt $DOWNLOAD_RETRIES ]; do
+  while [ "$attempts" -lt "$DOWNLOAD_RETRIES" ]; do
     attempts=$((attempts+1))
     echo "Downloading ($attempts/$DOWNLOAD_RETRIES): $url"
     if command -v wget >/dev/null 2>&1; then
@@ -113,6 +113,7 @@ extract() {
   case "$tarball" in
     *.tar.gz|*.tgz) tar xzf "$tarball" -C "$destdir" ;;
     *.tar.xz) tar xJf "$tarball" -C "$destdir" ;;
+    *.tar.bz2|*.tbz2) tar xjf "$tarball" -C "$destdir" ;;
     *.zip) unzip -q "$tarball" -d "$destdir" ;;
     *) echo "Unsupported archive: $tarball"; return 1 ;;
   esac
@@ -132,7 +133,7 @@ build_zlib() {
   else
     echo "zlib already installed in ${PREFIX}"
   fi
-  popd
+  popd || exit 1
 }
 
 build_openssl() {
@@ -149,7 +150,7 @@ build_openssl() {
   else
     echo "OpenSSL already installed in ${PREFIX}"
   fi
-  popd
+  popd || exit 1
 }
 
 build_tongsuo() {
@@ -166,7 +167,7 @@ build_tongsuo() {
   else
     echo "Tongsuo already installed in ${PREFIX}"
   fi
-  popd
+  popd || exit 1
 }
 
 build_curl() {
@@ -194,7 +195,7 @@ build_curl() {
 
   make -j"${JOBS}"
   make install
-  popd
+  popd || exit 1
 }
 
 build_tongsuo_curl() {
@@ -210,7 +211,7 @@ build_tongsuo_curl() {
     ./autogen.sh
   fi
   make clean || true
-  patch -p1 -N < tongsuo.patch
+  patch -p1 -N < tongsuo.patch || true
   autoreconf -fi
   ./configure \
     --host="${TARGET_TRIPLE}" \
@@ -224,7 +225,7 @@ build_tongsuo_curl() {
 
   make -j"${JOBS}"
   make install
-  popd
+  popd || exit 1
 }
 
 # ---------------------- Main function -------------------------
@@ -235,11 +236,11 @@ main() {
     fi
     mkdir -p "${SRC_DIR}" "${BUILD_DIR}" "${PREFIX}"
 
-    download "$ZLIB_URL" "$SRC_DIR"
-    download "$OPENSSL_URL" "$SRC_DIR"
-    download "$TONGSUO_URL" "$SRC_DIR"
-    download "$CURL_URL" "$SRC_DIR"
-    download "$TONGSUO_CURL_URL" "$SRC_DIR"
+    download "$ZLIB_URL" "$SRC_DIR" || exit 1
+    download "$OPENSSL_URL" "$SRC_DIR" || exit 1
+    download "$TONGSUO_URL" "$SRC_DIR" || exit 1
+    download "$CURL_URL" "$SRC_DIR" || exit 1
+    download "$TONGSUO_CURL_URL" "$SRC_DIR" || exit 1
     
     build_zlib
     # build_openssl

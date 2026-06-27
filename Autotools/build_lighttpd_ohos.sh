@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-# set -euo pipefail
+set -euo pipefail
 # set -x
 
 # ---------------------- User-editable variables ----------------------
 NDK=/opt/toolchain/command-line-tools/sdk/default/openharmony/native    # OpenHarmony NDK path
 ARCH=aarch64_ohos                            # aarch64, armv7a, etc.
 API=29                                 # OHOS API level
-PREFIX=/opt/ohos-arm64                 # Install prefix
+PREFIX=$HOME/opt/ohos-arm64                 # Install prefix
 BUILD_DIR=$(pwd)/build                 # Build directory
 SRC_DIR=$(pwd)/src                     # Source directory
 JOBS=$(nproc 2>/dev/null || echo 4)    # Number of parallel make jobs, default to 4 if nproc not available
@@ -95,7 +95,7 @@ download() {
     echo "Found existing $dest"
     return 0
   fi
-  while [ $attempts -lt $DOWNLOAD_RETRIES ]; do
+  while [ "$attempts" -lt "$DOWNLOAD_RETRIES" ]; do
     attempts=$((attempts+1))
     echo "Downloading ($attempts/$DOWNLOAD_RETRIES): $url"
     if command -v wget >/dev/null 2>&1; then
@@ -118,6 +118,7 @@ extract() {
   case "$tarball" in
     *.tar.gz|*.tgz) tar xzf "$tarball" -C "$destdir" ;;
     *.tar.xz) tar xJf "$tarball" -C "$destdir" ;;
+    *.tar.bz2|*.tbz2) tar xjf "$tarball" -C "$destdir" ;;
     *.zip) unzip -q "$tarball" -d "$destdir" ;;
     *) echo "Unsupported archive: $tarball"; return 1 ;;
   esac
@@ -145,7 +146,7 @@ build_fcgi() {
   else
     echo "fcgi already installed in ${PREFIX}"
   fi
-  popd
+  popd || exit 1
 }
 
 build_zlib() {
@@ -162,7 +163,7 @@ build_zlib() {
   else
     echo "zlib already installed in ${PREFIX}"
   fi
-  popd
+  popd || exit 1
 }
 
 build_pcre() {
@@ -193,7 +194,7 @@ build_pcre() {
   else
     echo "pcre already installed in ${PREFIX}"
   fi
-  popd
+  popd || exit 1
 }
 
 build_openssl() {
@@ -210,7 +211,7 @@ build_openssl() {
   else
     echo "OpenSSL already installed in ${PREFIX}"
   fi
-  popd
+  popd || exit 1
 }
 
 build_lighttpd() {
@@ -242,7 +243,7 @@ build_lighttpd() {
 
   make -j"${JOBS}"
   make install
-  popd
+  popd || exit 1
 }
 
 # ---------------------- Main function -------------------------
@@ -253,12 +254,12 @@ main() {
     fi
     mkdir -p "${SRC_DIR}" "${BUILD_DIR}" "${PREFIX}"
 
-    download "$FCGI_URL" "$SRC_DIR"
+    download "$FCGI_URL" "$SRC_DIR" || exit 1
 
-    download "$ZLIB_URL" "$SRC_DIR"
-    download "$PCRE_URL" "$SRC_DIR"
-    download "$OPENSSL_URL" "$SRC_DIR"
-    download "$LIGHTTPD_URL" "$SRC_DIR"
+    download "$ZLIB_URL" "$SRC_DIR" || exit 1
+    download "$PCRE_URL" "$SRC_DIR" || exit 1
+    download "$OPENSSL_URL" "$SRC_DIR" || exit 1
+    download "$LIGHTTPD_URL" "$SRC_DIR" || exit 1
 
     build_fcgi
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
-set -x
+# set -x
 
 # ---------------------- User-editable variables ----------------------
 TOOLCHAIN=/opt/toolchain/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu
@@ -9,7 +9,7 @@ TOOLCHAIN=/opt/toolchain/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu
 # TOOLCHAIN=/opt/toolchain/gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf
 # SYSROOT="${TOOLCHAIN}/aarch64-linux-gnu/libc"
 ARCH=aarch64                           # aarch64, armv7a, etc.
-PREFIX=/opt/linux-arm64                # Install prefix
+PREFIX=$HOME/opt/linux-arm64                # Install prefix
 BUILD_DIR=$(pwd)/build                 # Build directory
 SRC_DIR=$(pwd)/src                     # Source directory
 JOBS=$(nproc 2>/dev/null || echo 4)    # Number of parallel make jobs, default to 4 if nproc not available
@@ -58,7 +58,7 @@ NM="${TOOLCHAIN}/bin/${TARGET_TRIPLE}-nm"
 
 # ---------------------- Environment variables ----------------------
 export PATH="${TOOLCHAIN}/bin:${PATH}"
-export CC CXX AR AS LD RANLIB SYSROOTA
+export CC CXX AR AS LD RANLIB
 export CFLAGS="-fPIC -O2 -pipe"
 export CXXFLAGS="-fPIC -O2 -pipe"
 export LDFLAGS="-L${PREFIX}/lib"
@@ -81,7 +81,7 @@ download() {
     echo "Found existing $dest"
     return 0
   fi
-  while [ $attempts -lt $DOWNLOAD_RETRIES ]; do
+  while [ "$attempts" -lt "$DOWNLOAD_RETRIES" ]; do
     attempts=$((attempts+1))
     echo "Downloading ($attempts/$DOWNLOAD_RETRIES): $url"
     if command -v wget >/dev/null 2>&1; then
@@ -104,6 +104,7 @@ extract() {
   case "$tarball" in
     *.tar.gz|*.tgz) tar xzf "$tarball" -C "$destdir" ;;
     *.tar.xz) tar xJf "$tarball" -C "$destdir" ;;
+    *.tar.bz2|*.tbz2) tar xjf "$tarball" -C "$destdir" ;;
     *.zip) unzip -q "$tarball" -d "$destdir" ;;
     *) echo "Unsupported archive: $tarball"; return 1 ;;
   esac
@@ -120,7 +121,7 @@ build_microsocks() {
   make clean || true
   make prefix="${PREFIX}" -j"${JOBS}"
   make install prefix="${PREFIX}"
-  popd
+  popd || exit 1
 }
 
 # ---------------------- Main function -------------------------
@@ -131,7 +132,7 @@ main() {
     fi
     mkdir -p "${SRC_DIR}" "${BUILD_DIR}" "${PREFIX}"
 
-    download "$MICROSOCKS_URL" "$SRC_DIR"
+    download "$MICROSOCKS_URL" "$SRC_DIR" || exit 1
 
     build_microsocks
 
